@@ -2,16 +2,40 @@ import express from "express";
 
 import sequelize from "./config/dbConfig";
 
-import "./models/centroCusto.model";
-import "./models/obra.model";
-import "./models/user.model";
+import CentroCusto from "./models/centroCusto.model";
+import Obra from "./models/obra.model";
+import User from "./models/user.model";
 import "./models/listaEspera.model";
-import "./models/insumo.model";
+import "./models/insumos.model";
 import "./models/tabelaFinal.model";
 
 import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
 import insumos from "./routes/insumos";
+
+const UserCentroCusto = sequelize.define(
+  "user_centro_custo",
+  {},
+  { tableName: "user_centro_custo", timestamps: false }
+);
+
+Obra.hasMany(User, { foreignKey: "obraId" });
+User.belongsTo(Obra, { foreignKey: "obraId" });
+
+Obra.hasMany(CentroCusto, { foreignKey: "obraId" });
+CentroCusto.belongsTo(Obra, { foreignKey: "obraId" });
+
+User.belongsToMany(CentroCusto, {
+  through: UserCentroCusto,
+  foreignKey: "userId",
+  otherKey: "centroCustoId",
+});
+
+CentroCusto.belongsToMany(User, {
+  through: UserCentroCusto,
+  foreignKey: "centroCustoId",
+  otherKey: "userId",
+});
 
 const app = express();
 const port = 8080;
