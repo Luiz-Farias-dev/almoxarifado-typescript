@@ -1,6 +1,7 @@
 import express from "express";
 
 import sequelize from "./config/dbConfig";
+import "./models/centroCusto.model";
 
 const app = express();
 const port = 8080;
