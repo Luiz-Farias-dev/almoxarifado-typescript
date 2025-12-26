@@ -4,4 +4,5 @@ const express_1 = require("express");
 const centroCustoController_1 = require("../controllers/centroCustoController");
 const router = (0, express_1.Router)();
 router.get("/centroCusto", centroCustoController_1.getAllCentroCusto);
+exports.default = router;
 //# sourceMappingURL=centroCusto.js.map

@@ -1,1 +1,1 @@
-{"version":3,"file":"centroCusto.js","sourceRoot":"","sources":["../../src/routes/centroCusto.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AAEjC,gFAAyE;AAEzE,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,cAAc,EAAE,yCAAiB,CAAC,CAAC"}
+{"version":3,"file":"centroCusto.js","sourceRoot":"","sources":["../../src/routes/centroCusto.ts"],"names":[],"mappings":";;AAAA,qCAAiC;AAEjC,gFAAyE;AAEzE,MAAM,MAAM,GAAG,IAAA,gBAAM,GAAE,CAAC;AAExB,MAAM,CAAC,GAAG,CAAC,cAAc,EAAE,yCAAiB,CAAC,CAAC;AAE9C,kBAAe,MAAM,CAAC"}
