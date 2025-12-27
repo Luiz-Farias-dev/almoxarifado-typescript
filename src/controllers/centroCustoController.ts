@@ -25,3 +25,24 @@ export const getAllCentroCusto = (
       res.status(500).json({ error: "Erro ao buscar centros de custo" });
     });
 };
+
+export const createCentroCusto = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const { nome } = req.body;
+
+  CentroCusto.create({ nome })
+    .then((centroCusto) => {
+      const dto: centroCustoResponseDto = centroCustoResponseSchema.parse({
+        id: centroCusto.id,
+        nome: centroCusto.nome,
+      });
+      res.status(201).json(dto);
+    })
+    .catch((err) => {
+      console.error("Erro ao criar centro de custo:", err);
+      res.status(500).json({ error: "Erro ao criar centro de custo" });
+    });
+};
