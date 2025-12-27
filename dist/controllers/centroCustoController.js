@@ -5,10 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllCentroCusto = void 0;
 const centroCusto_model_1 = __importDefault(require("./../models/centroCusto.model"));
+const centroCusto_response_1 = require("../schemas/centroCusto/centroCusto.response");
 const getAllCentroCusto = (req, res, next) => {
-    centroCusto_model_1.default.findAll()
+    centroCusto_model_1.default.findAll({ attributes: ["id", "nome"], raw: true })
         .then((centroCustos) => {
-        res.status(200).json(centroCustos);
+        const dto = centroCusto_response_1.GetAllCentroCustoResponseSchema.parse(centroCustos);
+        res.status(200).json(dto);
     })
         .catch((err) => {
         console.error("Erro ao buscar centros de custo:", err);
