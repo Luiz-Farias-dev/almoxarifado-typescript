@@ -3,6 +3,10 @@ import { Request, Response, NextFunction } from "express";
 import CentroCusto from "./../models/centroCusto.model";
 
 import {
+  createCentroCustoBodySchema,
+  CreateCentroCustoBodyDto,
+} from "../schemas/centroCusto/centroCusto.schema";
+import {
   centroCustoResponseDto,
   centroCustoResponseSchema,
   GetAllCentroCustoResponseSchema,
@@ -31,15 +35,13 @@ export const createCentroCusto = (
   res: Response,
   next: NextFunction
 ): void => {
-  const { nome } = req.body;
+  const dto: CreateCentroCustoBodyDto = createCentroCustoBodySchema.parse(
+    req.body
+  );
 
-  CentroCusto.create({ nome })
+  CentroCusto.create(dto)
     .then((centroCusto) => {
-      const dto: centroCustoResponseDto = centroCustoResponseSchema.parse({
-        id: centroCusto.id,
-        nome: centroCusto.nome,
-      });
-      res.status(201).json(dto);
+      res.status(201).json(centroCusto);
     })
     .catch((err) => {
       console.error("Erro ao criar centro de custo:", err);
