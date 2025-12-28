@@ -48,3 +48,26 @@ export const createCentroCusto = (
       res.status(500).json({ error: "Erro ao criar centro de custo" });
     });
 };
+
+export const deleteCentroCusto = (
+  req: Request<{ centroId: string }>,
+  res: Response,
+  next: NextFunction
+): void => {
+  const centroId = parseInt(req.params.centroId, 10);
+
+  CentroCusto.destroy({ where: { id: centroId } })
+    .then((deletedCount) => {
+      if (deletedCount === 0) {
+        res.status(404).json({ error: "Centro de custo não encontrado" });
+      } else {
+        res
+          .status(200)
+          .json({ message: "Centro de custo deletado com sucesso" });
+      }
+    })
+    .catch((err) => {
+      console.error("Erro ao deletar centro de custo:", err);
+      res.status(500).json({ error: "Erro ao deletar centro de custo" });
+    });
+};

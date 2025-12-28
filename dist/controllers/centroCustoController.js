@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCentroCusto = exports.getAllCentroCusto = void 0;
+exports.deleteCentroCusto = exports.createCentroCusto = exports.getAllCentroCusto = void 0;
 const centroCusto_model_1 = __importDefault(require("./../models/centroCusto.model"));
 const centroCusto_schema_1 = require("../schemas/centroCusto/centroCusto.schema");
 const centroCusto_response_1 = require("../schemas/centroCusto/centroCusto.response");
@@ -31,4 +31,23 @@ const createCentroCusto = (req, res, next) => {
     });
 };
 exports.createCentroCusto = createCentroCusto;
+const deleteCentroCusto = (req, res, next) => {
+    const centroId = parseInt(req.params.centroId, 10);
+    centroCusto_model_1.default.destroy({ where: { id: centroId } })
+        .then((deletedCount) => {
+        if (deletedCount === 0) {
+            res.status(404).json({ error: "Centro de custo não encontrado" });
+        }
+        else {
+            res
+                .status(200)
+                .json({ message: "Centro de custo deletado com sucesso" });
+        }
+    })
+        .catch((err) => {
+        console.error("Erro ao deletar centro de custo:", err);
+        res.status(500).json({ error: "Erro ao deletar centro de custo" });
+    });
+};
+exports.deleteCentroCusto = deleteCentroCusto;
 //# sourceMappingURL=centroCustoController.js.map
