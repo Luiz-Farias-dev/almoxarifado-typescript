@@ -54,7 +54,10 @@ export const deleteCentroCusto = (
   res: Response,
   next: NextFunction
 ): void => {
-  const centroId = parseInt(req.params.centroId, 10);
+  const centroId = Number(req.params.centroId);
+  if (!Number.isInteger(centroId) || centroId <= 0) {
+    res.status(400).json({ error: "centroId inválido" });
+  }
 
   CentroCusto.destroy({ where: { id: centroId } })
     .then((deletedCount) => {

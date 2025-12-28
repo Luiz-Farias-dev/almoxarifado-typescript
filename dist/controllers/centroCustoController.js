@@ -32,7 +32,10 @@ const createCentroCusto = (req, res, next) => {
 };
 exports.createCentroCusto = createCentroCusto;
 const deleteCentroCusto = (req, res, next) => {
-    const centroId = parseInt(req.params.centroId, 10);
+    const centroId = Number(req.params.centroId);
+    if (!Number.isInteger(centroId) || centroId <= 0) {
+        res.status(400).json({ error: "centroId inválido" });
+    }
     centroCusto_model_1.default.destroy({ where: { id: centroId } })
         .then((deletedCount) => {
         if (deletedCount === 0) {
