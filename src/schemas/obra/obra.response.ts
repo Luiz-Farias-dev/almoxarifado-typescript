@@ -8,3 +8,5 @@ export const obraResponseSchema = z.object({
 export type ObraResponseDto = z.infer<typeof obraResponseSchema>;
 
 export const getAllObraResponseSchema = z.array(obraResponseSchema);
+
+export type getAllObraResponseDto = z.infer<typeof getAllObraResponseSchema>;

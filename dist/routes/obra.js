@@ -10,7 +10,7 @@ const obra_js_1 = require("../controllers/obra.js");
 const router = express_1.default.Router();
 // Endpoints para Obras (Works)
 router.post("/obra", obra_js_1.createObra);
-// router.get("/obra");
+router.get("/obra", obra_js_1.getAllObras);
 // router.get("/obra/:obraId");
 exports.default = router;
 //# sourceMappingURL=obra.js.map
