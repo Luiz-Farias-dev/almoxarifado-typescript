@@ -44,3 +44,28 @@ export const getAllObras = (
       res.status(500).json({ error: "Erro ao buscar obras" });
     });
 };
+
+export const getObraById = (
+  req: Request<{ obraId: string }>,
+  res: Response,
+  next: NextFunction
+): void => {
+  const obraId = Number(req.params.obraId);
+  if (!Number.isInteger(obraId) || obraId <= 0) {
+    res.status(400).json({ error: "obraId inválido" });
+    return;
+  }
+  Obra.findByPk(obraId, { attributes: ["id", "nome"], raw: true })
+    .then((obra) => {
+      if (!obra) {
+        res.status(404).json({ error: "Obra não encontrada" });
+        return;
+      }
+      const dto: ObraResponseDto = obraResponseSchema.parse(obra);
+      res.status(200).json(dto);
+    })
+    .catch((err) => {
+      console.error("Erro ao buscar obra:", err);
+      res.status(500).json({ error: "Erro ao buscar obra" });
+    });
+};

@@ -11,6 +11,6 @@ const router = express_1.default.Router();
 // Endpoints para Obras (Works)
 router.post("/obra", obra_js_1.createObra);
 router.get("/obra", obra_js_1.getAllObras);
-// router.get("/obra/:obraId");
+router.get("/obra/:obraId", obra_js_1.getObraById);
 exports.default = router;
 //# sourceMappingURL=obra.js.map
