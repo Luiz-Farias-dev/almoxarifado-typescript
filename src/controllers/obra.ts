@@ -2,13 +2,18 @@ import { Request, Response, NextFunction } from "express";
 
 import Obra from "./../models/obra.model";
 
+import {
+  createObraBodySchema,
+  CreateObraBodyDto,
+} from "../schemas/obra/obra.schema";
+
 export const createObra = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  const { nome } = req.body;
-  Obra.create({ nome })
+  const dto: CreateObraBodyDto = createObraBodySchema.parse(req.body);
+  Obra.create(dto)
     .then((obra) => {
       res.status(201).json(obra);
     })
