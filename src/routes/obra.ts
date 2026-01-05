@@ -1,5 +1,4 @@
 import express from "express";
-// import obrasController from '../controllers/workController.js';
 import { createObra, getAllObras, getObraById } from "../controllers/obra.js";
 // import authMiddleware from '../middleware/auth.js';
 
