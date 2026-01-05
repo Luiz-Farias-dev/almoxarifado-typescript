@@ -7,10 +7,12 @@ const express_1 = __importDefault(require("express"));
 const dbConfig_1 = __importDefault(require("./config/dbConfig"));
 require("./models/centroCusto.model");
 const centroCusto_1 = __importDefault(require("./routes/centroCusto"));
+const obra_1 = __importDefault(require("./routes/obra"));
 const app = (0, express_1.default)();
 const port = 8080;
 app.use(express_1.default.json());
 app.use(centroCusto_1.default);
+app.use(obra_1.default);
 const bootstrap = async () => {
     try {
         await dbConfig_1.default.authenticate();
