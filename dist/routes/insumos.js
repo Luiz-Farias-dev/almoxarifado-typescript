@@ -4,12 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const obra_js_1 = require("../controllers/obra.js");
+//import { createInsumo, getAllInsumos, getInsumoById } from '../controllers/insumo.js';
 // import authMiddleware from '../middleware/auth.js';
 const router = express_1.default.Router();
-// Endpoints para Obras (Works)
-router.post("/obra", obra_js_1.createObra);
-router.get("/obra", obra_js_1.getAllObras);
-router.get("/obra/:obraId", obra_js_1.getObraById);
+router.post("/insumos");
+router.get("/insumos");
+router.get("/insumos/:id");
 exports.default = router;
-//# sourceMappingURL=obra.js.map
+//# sourceMappingURL=insumos.js.map
