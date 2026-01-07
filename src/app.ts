@@ -4,6 +4,7 @@ import sequelize from "./config/dbConfig";
 import "./models/centroCusto.model";
 import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
+import insumos from "./routes/insumos";
 
 const app = express();
 const port = 8080;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use(centroCustoRoutes);
 app.use(obrasRoutes);
+app.use(insumos);
 
 const bootstrap = async () => {
   try {
