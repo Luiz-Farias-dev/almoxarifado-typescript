@@ -6,6 +6,8 @@ import iconv from "iconv-lite";
 import { Op } from "sequelize";
 
 import Insumos from "../models/Insumo";
+import { detectarEncodingEDelimitador, renomearColunas, separarCodigo, normalizarObsoleto, columnMapping } from "../utils/insumosHelpers";
+import { rename } from "node:fs";
 //import { produtoBaseBodySchema, ProdutoBaseBodyDto } from "../schemas/produtoCatalogo/produtoCatalogo.schema";
 // import {
 //   produtoResponseSchema,
@@ -16,4 +18,178 @@ import Insumos from "../models/Insumo";
 //   UploadResumoResponseDto,
 // } from "../schemas/produtoCatalogo/produtoCatalogo.response";
 
-// ====== Helpers ======
+export const uploadInsumos = async (req: Request, res: Response, next: NextFunction) => {
+  const file = (req as any).file as Express.Multer.File;
+  if (!file?.originalname) {
+    return res.status(400).json({ error: "Nenhum arquivo foi enviado." });
+  }
+
+  const name = file.originalname.toLowerCase();
+  const isXlsx = name.endsWith(".xlsx") || name.endsWith(".xls");
+  const isCsv = name.endsWith(".csv");
+
+  if (!isXlsx && !isCsv) {
+    return res.status(400).json({ error: "Formato de arquivo não suportado. Use .xlsx, .xls ou .csv." });
+  }
+
+  const fileType: "CSV" | "Excel" = isCsv ? "CSV" : "Excel";
+
+  try {
+    //Ler arquivos -> rows
+    let rows: Record<string, any>[] = [];
+    if (isXlsx) {
+      const workbook = XLSX.read(file.buffer, { type: "buffer" });
+      if (!workbook.SheetNames.length) {
+        return res.status(400).json({ 
+          error: "O arquivo Excel não contém planilhas." 
+        });
+      }
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName!];
+       if (!worksheet) {
+          return res.status(400).json({ 
+            error: `A planilha "${firstSheetName}" não foi encontrada. O arquivo pode estar corrompido.`
+          });
+        }        
+      rows = XLSX.utils.sheet_to_json(worksheet!, { defval: "" }) as Record<string, any>[];
+    }else {
+      const { encoding, delimiter } = detectarEncodingEDelimitador(file.buffer);
+
+      let decoded = "";
+      try {
+        decoded = iconv.decode(file.buffer, encoding);
+      } catch {
+        decoded = file.buffer.toString("utf-8");
+      }
+
+      try {
+        rows = csvParse(decoded, {
+          columns: true,
+          delimiter,
+          skip_empty_lines: true,
+          trim: true,
+          bom: true,
+        }) as Record<string, any>[];
+      } catch (err) {
+        //fallback simples
+        const attempts: Array<{ encoding: BufferEncoding | "latin1"; delimiter: string }> = [
+          { encoding: "utf-8", delimiter: "," },
+          { encoding: "utf-8", delimiter: ";" },
+          { encoding: "latin1", delimiter: "," },
+          { encoding: "latin1", delimiter: ";" },
+        ];
+        let ok = false;
+        for (const attempt of attempts) {
+          try {
+            const d = file.buffer.toString(attempt.encoding === "latin1" ? "latin1" : attempt.encoding);
+            rows = csvParse(d, {
+              columns: true,
+              delimiter: attempt.delimiter,
+              skip_empty_lines: true,
+              trim: true,
+              bom: true,
+            }) as Record<string, any>[];
+            ok = rows.length > 0;
+            if (ok) break
+          } catch {
+            //tentar próximo
+          }
+        }
+
+        if (!ok) {
+          return res.status(400).json({ error: "Não foi possível analisar o arquivo CSV. Verifique o formato e o conteúdo do arquivo." });
+        }
+      }
+    }
+
+    if (!rows.length) {
+      return res.status(400).json({ error: "O arquivo enviado está vazio." });
+    }
+
+    //Mapear colunas
+    let mappedRows = rows.map((r) => renomearColunas(r, columnMapping));
+
+    //Insumo_ItemObsoleto normalização
+    mappedRows = mappedRows.map((r) => {
+      if (r.Insumo_ItemObsoleto !== undefined && r.INSUMO_ITEMOBSOLETO === undefined) {
+        r.INSUMO_ITEMOBSOLETO = r.Insumo_ItemObsoleto;
+        delete r.Insumo_ItemObsoleto;
+      }
+      return r;
+    });
+
+    const columns = new Set(Object.keys(mappedRows ?? {}));
+
+    const hasInsumoCodigo = columns.has("Insumo_Cod");
+    const hasSeparateCodes = columns.has("Insumo_Cod") && columns.has("SubInsumo_Cod");
+    const hasInsumoEspecificacao = columns.has("Insumo_Especificacao");
+    const hasSubInsumoEspecificacao = columns.has("SubInsumo_Especificacao");
+
+    if (!hasInsumoCodigo && !hasSeparateCodes) {
+      return res.status(400).json({
+        error: "O arquivo deve conter a coluna 'Insumo_Cod' ou ambas 'Insumo_Cod' e 'SubInsumo_Cod'.", 
+        colunasEncontradas: Array.from(columns) 
+      });
+    }
+
+    for (const required of ["Unid_Cod", "INSUMO_ITEMOBSOLETO"]) {
+      if (!columns.has(required)) {
+        return res.status(400).json({
+          error: `O arquivo deve conter a coluna obrigatória '${required}'.`, 
+          colunasEncontradas: Array.from(columns) 
+        });
+      }
+    }
+
+    //Insumo_Codigo -> Insumo_Cod + SubInsumo_Cod
+    if (hasInsumoCodigo) {
+      mappedRows = mappedRows.map((r) => {
+        const { insumo, sub } = separarCodigo(String(r.Insumo_Codigo || ""));
+        r.Insumo_Cod = insumo;
+        r.SubInsumo_Cod = sub;
+        delete r.Insumo_Codigo;
+        return r;
+      });
+    }
+
+    //Insumo_Especificacao -> SubInsumo_Especificacao
+    if (hasInsumoEspecificacao) {
+      mappedRows = mappedRows.map((r) => {
+        r.SubInsumo_Especificacao = r.Insumo_Especificacao;
+        delete r.Insumo_Especificacao;
+        return r;
+      });
+    }
+
+    //Limpeza + Normalização 
+  const cleaned = mappedRows
+  .map((r) => ({
+    Insumo_Cod: r.Insumo_Cod != null ? String(r.Insumo_Cod).trim() : null,
+    SubInsumo_Cod: 
+      r.SubInsumo_Cod != null && String(r.SubInsumo_Cod).trim() !== ""
+        ? String(r.SubInsumo_Cod).trim()
+        : null,
+    Unid_Cod: r.Unid_Cod != null && String(r.Unid_Cod).trim() !== "" 
+      ? String(r.Unid_Cod).trim() 
+      : "",
+    SubInsumo_Especificacao: r.SubInsumo_Especificacao != null 
+      ? String(r.SubInsumo_Especificacao).trim() 
+      : null,
+    INSUMO_ITEMOBSOLETO: normalizarObsoleto(r.INSUMO_ITEMOBSOLETO),
+  }))
+  .filter((r) => r.Insumo_Cod != null && r.SubInsumo_Especificacao != null)
+  .map((r) => ({
+    Insumo_Cod: r.Insumo_Cod!,
+    SubInsumo_Cod: r.SubInsumo_Cod,
+    Unid_Cod: r.Unid_Cod,
+    SubInsumo_Especificacao: r.SubInsumo_Especificacao!,
+    INSUMO_ITEMOBSOLETO: r.INSUMO_ITEMOBSOLETO,
+  })) as Array<{
+    Insumo_Cod: string;
+    SubInsumo_Cod: string | null;
+    Unid_Cod: string;
+    SubInsumo_Especificacao: string;
+    INSUMO_ITEMOBSOLETO: string;
+  }>;
+
+  //Dedupe no payload

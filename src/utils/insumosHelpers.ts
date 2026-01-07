@@ -65,7 +65,7 @@ export const renomearColunas = (
   return out;
 };
 
-const columnMapping: Record<string, string> = {
+export const columnMapping: Record<string, string> = {
   // formato antigo
   Insumo_Cod: "Insumo_Cod",
   SubInsumo_Cod: "SubInsumo_Cod",
