@@ -192,4 +192,13 @@ export const uploadInsumos = async (req: Request, res: Response, next: NextFunct
     INSUMO_ITEMOBSOLETO: string;
   }>;
 
-  //Dedupe no payload
+  //Dedupe no payload(Remove duplicadas mantendo a primeira ocorrência)
+  const uniqueMap = new Map<string, typeof cleaned[number]>();
+  for (const r of cleaned) {
+    const key = `${r.Insumo_Cod}::${r.SubInsumo_Cod ?? "NULL"}::${r.SubInsumo_Especificacao} `;
+    if (!uniqueMap.has(key)) uniqueMap.set(key, r);
+  }
+
+  const uniqueRows = Array.from(uniqueMap.values());
+
+  //Checar existentes em lotes
