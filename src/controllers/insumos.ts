@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, raw } from "express";
 import * as XLSX from "xlsx";
 import { parse as csvParse } from "csv-parse/sync";
 import chardet from "jschardet";
@@ -8,6 +8,7 @@ import { Op } from "sequelize";
 import Insumos from "../models/Insumo";
 import { detectarEncodingEDelimitador, renomearColunas, separarCodigo, normalizarObsoleto, columnMapping } from "../utils/insumosHelpers";
 import { rename } from "node:fs";
+import { upload } from "../config/multerConfig";
 //import { produtoBaseBodySchema, ProdutoBaseBodyDto } from "../schemas/produtoCatalogo/produtoCatalogo.schema";
 // import {
 //   produtoResponseSchema,
@@ -202,3 +203,45 @@ export const uploadInsumos = async (req: Request, res: Response, next: NextFunct
   const uniqueRows = Array.from(uniqueMap.values());
 
   //Checar existentes em lotes
+  const batchSize = 500;
+  const existingKeys = new Set<string>();
+
+  for (let i = 0; i < uniqueRows.length; i += batchSize) {
+    const batch = uniqueRows.slice(i, i + batchSize);
+
+    const orConditions = batch.map((b) => ({
+      Insumo_Cod: b.Insumo_Cod,
+      SubInsumo_Cod: b.SubInsumo_Cod,
+      SubInsumo_Especificacao: b.SubInsumo_Especificacao,
+    }));
+
+    const existing = await Insumos.findAll({
+      attributes: ["Insumo_Cod", "SubInsumo_Cod", "SubInsumo_Especificacao"],
+      where: { [Op.or]: orConditions },
+      raw: true,
+    });
+
+    for (const e of existing as any[]) {
+      const key = `${String(e.Insumo_Cod)}::${e.SubInsumo_Cod ?? "NULL"}::${String(e.SubInsumo_Especificacao)} `;
+      existingKeys.add(key);
+    }
+  }
+
+  const newRecords = uniqueRows.filter((r) => {
+    const key = `${r.Insumo_Cod}::${r.SubInsumo_Cod ?? "NULL"}::${r.SubInsumo_Especificacao} `;
+    return !existingKeys.has(key);
+  });
+
+  if (!newRecords.length) {
+    const dto: UploadResumoResponseDto = uploadResumoResponseSchema.parse({
+      message: "Nenhum novo insumo para adicionar. Todos os registros já existem na base de dados.",
+      total_rows: uniqueRows.length,
+      new_rows: 0,
+      ignored_rows: uniqueRows.length,
+      file_type: fileType,
+    });
+    return res.status(200).json(dto);
+  }
+
+  //Inserir em lotes
+  
