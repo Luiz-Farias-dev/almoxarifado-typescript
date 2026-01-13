@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction, raw } from "express";
 import * as XLSX from "xlsx";
 import { parse as csvParse } from "csv-parse/sync";
-import chardet from "jschardet";
 import iconv from "iconv-lite";
 import { Op } from "sequelize";
 
@@ -15,10 +14,7 @@ import {
 } from "../utils/insumosHelpers";
 import { rename } from "node:fs";
 import { upload } from "../config/multerConfig";
-import {
-  produtoBaseBodySchema,
-  ProdutoBaseBodyDto,
-} from "../schemas/produtoCatalogo/produtoCatalogo.schema";
+import { produtoBaseSchema } from "../schemas/insumos/insumos.schema";
 import {
   produtoResponseSchema,
   ProdutoResponseDto,
@@ -26,7 +22,7 @@ import {
   GetAllProdutosResponseDto,
   uploadResumoResponseSchema,
   UploadResumoResponseDto,
-} from "../schemas/produtoCatalogo/produtoCatalogo.response";
+} from "../schemas/insumos/insumos.response";
 
 export const uploadInsumos = async (
   req: Request,
@@ -328,5 +324,41 @@ export const uploadInsumos = async (
     res
       .status(500)
       .json({ error: "Ocorreu um erro ao processar o arquivo enviado." });
+  }
+};
+
+export const createInsumo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const dto = produtoBaseSchema.parse(req.body);
+    const novoInsumo = await Insumos.create(dto);
+    const responseDto: ProdutoResponseDto = produtoResponseSchema.parse(
+      novoInsumo.toJSON()
+    );
+    res.status(201).json(responseDto);
+  } catch (error) {
+    console.error("Erro ao criar novo insumo:", error);
+    res.status(500).json({ error: "Ocorreu um erro ao criar o insumo." });
+  }
+};
+
+export const getAllInsumos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const insumos = await Insumos.findAll();
+    const responseDto: GetAllProdutosResponseDto =
+      getAllProdutosResponseSchema.parse(
+        insumos.map((insumo) => insumo.toJSON())
+      );
+    res.status(200).json(responseDto);
+  } catch (error) {
+    console.error("Erro ao buscar todos os insumos:", error);
+    res.status(500).json({ error: "Ocorreu um erro ao buscar os insumos." });
   }
 };

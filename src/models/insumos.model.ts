@@ -26,9 +26,9 @@ const Insumos = sequelize.define(
       allowNull: false,
     },
     Insumo_ItemObsoleto: {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.CHAR(1),
       allowNull: false,
-      defaultValue: false,
+      defaultValue: "N",
     },
   },
   {

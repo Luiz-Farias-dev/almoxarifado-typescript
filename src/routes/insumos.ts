@@ -1,14 +1,18 @@
 import express from "express";
 
-//import { createInsumo, getAllInsumos, getInsumoById } from '../controllers/insumo.js';
+import {
+  uploadInsumos,
+  createInsumo,
+  getAllInsumos,
+} from "../controllers/insumos.js";
 // import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post("/insumos");
+router.post("/insumos", uploadInsumos);
 
-router.get("/insumos");
+router.post("/insumo", createInsumo);
 
-router.get("/insumos/:id");
+router.get("/insumos", getAllInsumos);
 
 export default router;
