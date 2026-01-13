@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-//import { createInsumo, getAllInsumos, getInsumoById } from '../controllers/insumo.js';
+const insumos_js_1 = require("../controllers/insumos.js");
 // import authMiddleware from '../middleware/auth.js';
 const router = express_1.default.Router();
-router.post("/insumos");
-router.get("/insumos");
-router.get("/insumos/:id");
+router.post("/insumos", insumos_js_1.uploadInsumos);
+router.post("/insumo", insumos_js_1.createInsumo);
+router.get("/insumos", insumos_js_1.getAllInsumos);
 exports.default = router;
 //# sourceMappingURL=insumos.js.map
