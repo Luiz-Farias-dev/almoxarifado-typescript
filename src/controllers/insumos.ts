@@ -12,8 +12,6 @@ import {
   normalizarObsoleto,
   columnMapping,
 } from "../utils/insumosHelpers";
-import { rename } from "node:fs";
-import { upload } from "../config/multerConfig";
 import { produtoBaseSchema } from "../schemas/insumos/insumos.schema";
 import {
   produtoResponseSchema,
