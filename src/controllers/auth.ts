@@ -6,3 +6,4 @@ import User from "../models/user.model";
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { nome, cpf, tipoFuncionario } = req.body;
+    
