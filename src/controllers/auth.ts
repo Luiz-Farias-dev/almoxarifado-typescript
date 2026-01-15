@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+
 import User from "../models/user.model";
 import { gerarSenhaBase } from "../utils/signupHelpers";
 
