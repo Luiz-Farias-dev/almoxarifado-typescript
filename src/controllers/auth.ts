@@ -15,7 +15,9 @@ export const signUp = async (
     const { nome, cpf, tipoFuncionario, obraId, centroCustoIds } = req.body;
 
     if (!nome || !cpf || !tipoFuncionario) {
-      return res.status(400).json({ error: "nome, cpf e tipoFuncionario são obrigatórios" });
+      return res
+        .status(400)
+        .json({ error: "nome, cpf e tipoFuncionario são obrigatórios" });
     }
 
     const senha = gerarSenhaBase();
@@ -23,10 +25,15 @@ export const signUp = async (
     // If Almoxarife, require obra and centroCusto information and validate them
     if (tipoFuncionario === "Almoxarife") {
       if (!obraId) {
-        return res.status(400).json({ error: "obraId é obrigatório para Almoxarife" });
+        return res
+          .status(400)
+          .json({ error: "obraId é obrigatório para Almoxarife" });
       }
-      if (!Array.isArray(centroCustoIds) || centroCustoIds.length === 0) {
-        return res.status(400).json({ error: "centroCustoIds é obrigatório e deve ser um array" });
+
+      if (!Array.isArray(centroCustoIds) || centroCustoIds.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "centroCustoIds é obrigatório e deve ser um array" });
       }
 
       const obra = await Obra.findByPk(Number(obraId));
@@ -34,11 +41,16 @@ export const signUp = async (
         return res.status(400).json({ error: "Obra não encontrada" });
       }
 
-      const centros = await CentroCusto.findAll({ where: { id: centroCustoIds } });
+      const centros = await CentroCusto.findAll({
+        where: { id: centroCustoIds },
+      });
       if (centros.length !== centroCustoIds.length) {
-        return res.status(400).json({ error: "Algum centro de custo não foi encontrado" });
+        return res
+          .status(400)
+          .json({ error: "Algum centro de custo não foi encontrado" });
       }
-      // Note: associations (linking user -> obra / centros) are not created here because user/obra/centro models
+
+      // Note: associations (linking user -> obra / centros) are not created here because user/obra/centro models
       // currently do not define association fields. That should be added in the models if persistence of relations is desired.
     }
 
