@@ -1,6 +1,7 @@
+import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+
 import User from "../models/user.model";
 import Obra from "../models/obra.model";
 import CentroCusto from "../models/centroCusto.model";
@@ -72,7 +73,7 @@ export const login = async (
     if (!cpf || !senha) {
       return res.status(400).json({ error: "cpf e senha são obrigatórios" });
     }
-    //To-do: Criar validação para user (zod, interface do javascript)
+    //To-do: Criar validação para user (zod, interface do typescript)
     const user: any = await User.findOne({ where: { cpf } });
     if (!user) {
       return res.status(401).json({ error: "Credenciais inválidas" });
