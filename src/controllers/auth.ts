@@ -84,7 +84,7 @@ export const login = async (
     const token = jwt.sign(
       { id: user.id, cpf: user.cpf, tipoFuncionario: user.tipoFuncionario },
       process.env.JWT_SECRET || "default_secret",
-      { expiresIn: "8h" },
+      { expiresIn: "12h" },
     );
     return res.status(200).json({ token });
   } catch (error) {
