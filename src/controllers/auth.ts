@@ -9,7 +9,7 @@ import { gerarSenhaBase } from "../utils/signupHelpers";
 export const signUp = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { nome, cpf, tipoFuncionario, obraId, centroCustoIds } = req.body;
@@ -57,6 +57,36 @@ export const signUp = async (
     const user = await User.create({ nome, cpf, tipoFuncionario, senha });
 
     return res.status(201).json({ user, senhaGerada: senha });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { cpf, senha } = req.body;
+    if (!cpf || !senha) {
+      return res.status(400).json({ error: "cpf e senha são obrigatórios" });
+    }
+    //To-do: Criar validação para user (zod, interface do javascript)
+    const user: any = await User.findOne({ where: { cpf } });
+    if (!user) {
+      return res.status(401).json({ error: "Credenciais inválidas" });
+    }
+    const isPasswordValid = await bcrypt.compare(senha, user.senha);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Credenciais inválidas" });
+    }
+    const token = jwt.sign(
+      { id: user.id, cpf: user.cpf, tipoFuncionario: user.tipoFuncionario },
+      process.env.JWT_SECRET || "default_secret",
+      { expiresIn: "8h" },
+    );
+    return res.status(200).json({ token });
   } catch (error) {
     next(error);
   }
