@@ -6,6 +6,18 @@ import User from "../models/user.model";
 import Obra from "../models/obra.model";
 import CentroCusto from "../models/centroCusto.model";
 import { gerarSenhaBase } from "../utils/signupHelpers";
+import {
+  signUpBodySchema,
+  SignUpBodyDto,
+  loginBodySchema,
+  LoginBodyDto,
+} from "../schemas/auth/auth.schema";
+import {
+  signUpResponseSchema,
+  SignUpResponseDto,
+  loginResponseSchema,
+  LoginResponseDto,
+} from "../schemas/auth/auth.response";
 
 export const signUp = async (
   req: Request,
@@ -13,30 +25,13 @@ export const signUp = async (
   next: NextFunction,
 ) => {
   try {
-    const { nome, cpf, tipoFuncionario, obraId, centroCustoIds } = req.body;
-
-    if (!nome || !cpf || !tipoFuncionario) {
-      return res
-        .status(400)
-        .json({ error: "nome, cpf e tipoFuncionario são obrigatórios" });
-    }
+    const dto: SignUpBodyDto = signUpBodySchema.parse(req.body);
+    const { nome, cpf, tipoFuncionario, obraId, centroCustoIds } = dto;
 
     const senha = gerarSenhaBase();
 
-    // If Almoxarife, require obra and centroCusto information and validate them
+    // If Almoxarife, validate obra and centroCusto exist
     if (tipoFuncionario === "Almoxarife") {
-      if (!obraId) {
-        return res
-          .status(400)
-          .json({ error: "obraId é obrigatório para Almoxarife" });
-      }
-
-      if (!Array.isArray(centroCustoIds) || centroCustoIds.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "centroCustoIds é obrigatório e deve ser um array" });
-      }
-
       const obra = await Obra.findByPk(Number(obraId));
       if (!obra) {
         return res.status(400).json({ error: "Obra não encontrada" });
@@ -45,7 +40,7 @@ export const signUp = async (
       const centros = await CentroCusto.findAll({
         where: { id: centroCustoIds },
       });
-      if (centros.length !== centroCustoIds.length) {
+      if (centros.length !== centroCustoIds!.length) {
         return res
           .status(400)
           .json({ error: "Algum centro de custo não foi encontrado" });
@@ -56,8 +51,12 @@ export const signUp = async (
     }
 
     const user = await User.create({ nome, cpf, tipoFuncionario, senha });
+    const userPlain = user.toJSON() as any;
 
-    return res.status(201).json({ user, senhaGerada: senha });
+    const response: SignUpResponseDto = { user: userPlain, senhaGerada: senha };
+    signUpResponseSchema.parse(response);
+
+    return res.status(201).json(response);
   } catch (error) {
     next(error);
   }
@@ -69,12 +68,10 @@ export const login = async (
   next: NextFunction,
 ) => {
   try {
-    const { cpf, senha } = req.body;
-    if (!cpf || !senha) {
-      return res.status(400).json({ error: "cpf e senha são obrigatórios" });
-    }
-    //To-do: Criar validação para user (zod, interface do typescript)
-    const user: any = await User.findOne({ where: { cpf } });
+    const dto: LoginBodyDto = loginBodySchema.parse(req.body);
+    const { cpf, senha } = dto;
+
+    const user = await User.findOne({ where: { cpf }, raw: true }) as any;
     if (!user) {
       return res.status(401).json({ error: "Credenciais inválidas" });
     }
@@ -87,7 +84,11 @@ export const login = async (
       process.env.JWT_SECRET || "default_secret",
       { expiresIn: "12h" },
     );
-    return res.status(200).json({ token });
+
+    const response: LoginResponseDto = { token };
+    loginResponseSchema.parse(response);
+
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
