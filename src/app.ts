@@ -1,7 +1,14 @@
 import express from "express";
 
 import sequelize from "./config/dbConfig";
+
 import "./models/centroCusto.model";
+import "./models/obra.model";
+import "./models/user.model";
+import "./models/listaEspera.model";
+import "./models/insumo.model";
+import "./models/tabelaFinal.model";
+
 import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
 import insumos from "./routes/insumos";
