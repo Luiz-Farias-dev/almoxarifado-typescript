@@ -22,3 +22,9 @@ yarn-error.log*
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Cursor folder
+.cursor
+
+#Old project in fastAPI in temp folder
+temp

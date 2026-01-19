@@ -31,6 +31,11 @@ const User = dbConfig_1.default.define("user", {
         type: sequelize_1.default.STRING,
         allowNull: false,
     },
+    primeiroLogin: {
+        type: sequelize_1.default.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+    },
 });
 exports.default = User;
 //# sourceMappingURL=user.model.js.map

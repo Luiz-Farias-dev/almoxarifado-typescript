@@ -14,6 +14,19 @@ const CentroCusto = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    centroNegocioCod: {
+      type: Sequelize.STRING,
+      allowNull: true,
+      field: "Centro_Negocio_Cod",
+    },
+    obraId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: "obra",
+        key: "id",
+      },
+    },
   },
   {
     tableName: "centro_custo",

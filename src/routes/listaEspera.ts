@@ -1,11 +1,23 @@
 import express from "express";
+import { getCurrentUser } from "../middleware/auth";
+import {
+  createListaEspera,
+  readListaEspera,
+  deleteListaEspera,
+} from "../controllers/listaEspera";
 
 const router = express.Router();
 
-router.post("/lista-espera");
+// Apply authentication middleware to all routes
+router.use(getCurrentUser);
 
-router.get("/lista-espera");
+router.post("/lista-espera", createListaEspera);
 
-router.delete("/lista-espera/:id");
+router.get("/lista-espera", readListaEspera);
+
+router.delete(
+  "/lista-espera/:codigo_pedido/:Insumo_Cod/:SubInsumo_Cod",
+  deleteListaEspera
+);
 
 export default router;

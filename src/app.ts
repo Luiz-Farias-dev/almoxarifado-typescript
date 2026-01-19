@@ -1,4 +1,5 @@
 import express from "express";
+import Sequelize from "sequelize";
 
 import sequelize from "./config/dbConfig";
 
@@ -8,16 +9,14 @@ import User from "./models/user.model";
 import "./models/listaEspera.model";
 import "./models/insumos.model";
 import "./models/tabelaFinal.model";
+import UserCentroCusto from "./models/userCentroCusto.model";
 
 import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
 import insumos from "./routes/insumos";
+import listaEsperaRoutes from "./routes/listaEspera";
 
-const UserCentroCusto = sequelize.define(
-  "user_centro_custo",
-  {},
-  { tableName: "user_centro_custo", timestamps: false }
-);
+// UserCentroCusto model is now imported from models/userCentroCusto.model.ts
 
 Obra.hasMany(User, { foreignKey: "obraId" });
 User.belongsTo(Obra, { foreignKey: "obraId" });
@@ -45,12 +44,13 @@ app.use(express.json());
 app.use(centroCustoRoutes);
 app.use(obrasRoutes);
 app.use(insumos);
+app.use(listaEsperaRoutes);
 
 const bootstrap = async () => {
   try {
     await sequelize.authenticate();
-    // await sequelize.sync({ force: true });
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
+    // await sequelize.sync();
 
     app.listen(port, () => {
       console.log(`Servidor está rodando na porta http://localhost:${port}`);

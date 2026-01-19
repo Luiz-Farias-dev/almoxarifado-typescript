@@ -32,6 +32,14 @@ const User = sequelize.define("user", {
     allowNull: false,
     defaultValue: true,
   },
+  obraId: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    references: {
+      model: "obra",
+      key: "id",
+    },
+  },
 });
 
 export default User;
