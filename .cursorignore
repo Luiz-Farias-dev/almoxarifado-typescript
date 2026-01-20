@@ -1,0 +1,2 @@
+# Not ignore the files in the temp folder
+!temp/

@@ -18,22 +18,22 @@ import listaEsperaRoutes from "./routes/listaEspera";
 
 // UserCentroCusto model is now imported from models/userCentroCusto.model.ts
 
-Obra.hasMany(User, { foreignKey: "obraId" });
-User.belongsTo(Obra, { foreignKey: "obraId" });
+Obra.hasMany(User, { foreignKey: "obra_id" });
+User.belongsTo(Obra, { foreignKey: "obra_id" });
 
-Obra.hasMany(CentroCusto, { foreignKey: "obraId" });
-CentroCusto.belongsTo(Obra, { foreignKey: "obraId" });
+Obra.hasMany(CentroCusto, { foreignKey: "work_id" });
+CentroCusto.belongsTo(Obra, { foreignKey: "work_id" });
 
 User.belongsToMany(CentroCusto, {
   through: UserCentroCusto,
-  foreignKey: "userId",
-  otherKey: "centroCustoId",
+  foreignKey: "funcionario_id",
+  otherKey: "centro_custo_cod",
 });
 
 CentroCusto.belongsToMany(User, {
   through: UserCentroCusto,
-  foreignKey: "centroCustoId",
-  otherKey: "userId",
+  foreignKey: "centro_custo_cod",
+  otherKey: "funcionario_id",
 });
 
 const app = express();

@@ -52,7 +52,7 @@ export const createListaEspera = async (
     // Validate CC exists
     const ccRow = await CentroCusto.findOne({
       where: {
-        centroNegocioCod: ccCodReq,
+        Centro_Negocio_Cod: ccCodReq,
       },
     });
 
@@ -73,7 +73,7 @@ export const createListaEspera = async (
       }
 
       // Verify CC belongs to user's obra
-      if ((ccRow as any).obraId !== userObraId) {
+      if ((ccRow as any).work_id !== userObraId) {
         res.status(403).json({
           error: `CC '${ccCodReq}' não pertence à obra do usuário`,
         });
@@ -84,9 +84,9 @@ export const createListaEspera = async (
       // Query user_centro_custo association table
       const vinculo = await UserCentroCusto.findOne({
         where: {
-          userId: userId,
-          obraId: userObraId,
-          centroCustoId: (ccRow as any).id,
+          funcionario_id: userId,
+          obra_id: userObraId,
+          centro_custo_cod: (ccRow as any).Centro_Negocio_Cod,
         },
         raw: true,
       });
@@ -132,15 +132,15 @@ export const createListaEspera = async (
         // Serialize CC data for JSONB field
         const centroCustoDict = {
           Centro_Negocio_Cod: ccCodReq,
-          Centro_Nome: ccNameReq || (ccRow as any).nome,
+          Centro_Nome: ccNameReq || (ccRow as any).Centro_Nome || (ccRow as any).nome,
         };
 
         const dbListaEspera = await ListaEspera.create(
           {
             ...produtoData,
-            almoxarifeNome: dto.almoxarife_nome,
+            almoxarife_nome: dto.almoxarife_nome,
             destino: dto.destino,
-            centroCusto: centroCustoDict,
+            centro_custo: centroCustoDict,
             codigo_pedido: codigoPedido,
           },
           { transaction }
@@ -204,10 +204,10 @@ export const readListaEspera = async (
       // First, get the centroCustoIds that the user has access to
       const userCentroCustos = await UserCentroCusto.findAll({
         where: {
-          userId: userId,
-          obraId: userObraId,
+          funcionario_id: userId,
+          obra_id: userObraId,
         },
-        attributes: ["centroCustoId"],
+        attributes: ["centro_custo_cod"],
         raw: true,
       });
 
@@ -220,22 +220,22 @@ export const readListaEspera = async (
       }
 
       const allowedCentroCustoIds = (userCentroCustos as any[]).map(
-        (uc) => uc.centroCustoId
+        (uc) => uc.centro_custo_cod
       );
 
       // Get the Centro_Negocio_Cod values for these centroCustoIds
       const centros = await CentroCusto.findAll({
         where: {
-          id: {
+          Centro_Negocio_Cod: {
             [Op.in]: allowedCentroCustoIds,
           },
         },
-        attributes: ["centroNegocioCod"],
+        attributes: ["Centro_Negocio_Cod"],
         raw: true,
       });
 
       const allowedCodes = (centros as any[])
-        .map((c) => c.centroNegocioCod)
+        .map((c) => c.Centro_Negocio_Cod)
         .filter((code) => code != null);
 
       if (allowedCodes.length === 0) {
@@ -314,14 +314,14 @@ export const readListaEspera = async (
       // Get CC codes that belong to the specified obra
       const centrosObra = await CentroCusto.findAll({
         where: {
-          obraId: work_id,
+          work_id: work_id,
         },
-        attributes: ["centroNegocioCod"],
+        attributes: ["Centro_Negocio_Cod"],
         raw: true,
       });
 
       const obraCodes = (centrosObra as any[])
-        .map((c) => c.centroNegocioCod)
+        .map((c) => c.Centro_Negocio_Cod)
         .filter((code) => code != null);
 
       if (obraCodes.length === 0) {
@@ -365,12 +365,11 @@ export const readListaEspera = async (
         SubInsumo_Cod: plain.SubInsumo_Cod,
         SubInsumo_Especificacao: plain.SubInsumo_Especificacao,
         quantidade: plain.quantidade,
-        almoxarifeNome: plain.almoxarifeNome,
-        centroCusto: plain.centroCusto,
+        almoxarife_nome: plain.almoxarife_nome,
+        centro_custo: plain.centro_custo,
         Unid_Cod: plain.Unid_Cod,
         destino: plain.destino,
-        created_at: plain.created_at,
-        updated_at: plain.updated_at,
+        data_att: plain.data_att,
       };
     });
 
@@ -418,23 +417,23 @@ export const deleteListaEspera = async (
       }
 
       // Check if user has permission for this CC
-      const centroCustoData = (item.toJSON() as any).centroCusto;
+      const centroCustoData = (item.toJSON() as any).centro_custo;
       const ccCod = centroCustoData?.Centro_Negocio_Cod;
 
       if (ccCod) {
         const ccRow = await CentroCusto.findOne({
           where: {
-            centroNegocioCod: ccCod,
+            Centro_Negocio_Cod: ccCod,
           },
         });
 
-        if (ccRow && (ccRow as any).obraId === userObraId) {
+        if (ccRow && (ccRow as any).work_id === userObraId) {
           // Verify user has permission
           const vinculo = await UserCentroCusto.findOne({
             where: {
-              userId: userId,
-              obraId: userObraId,
-              centroCustoId: (ccRow as any).id,
+              funcionario_id: userId,
+              obra_id: userObraId,
+              centro_custo_cod: (ccRow as any).Centro_Negocio_Cod,
             },
           });
 

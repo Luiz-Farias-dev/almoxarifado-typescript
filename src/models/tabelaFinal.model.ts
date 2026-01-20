@@ -42,11 +42,15 @@ const TabelaFinal = sequelize.define(
       type: Sequelize.STRING(255),
       allowNull: true,
     },
+    data_att: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+    },
   },
   {
-    timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
+    tableName: "tabela_final",
+    timestamps: false,
   }
 );
 

@@ -34,7 +34,13 @@ const signUp = async (req, res, next) => {
             // Note: associations (linking user -> obra / centros) are not created here because user/obra/centro models
             // currently do not define association fields. That should be added in the models if persistence of relations is desired.
         }
-        const user = await user_model_1.default.create({ nome, cpf, tipoFuncionario, senha });
+        const user = await user_model_1.default.create({
+            nome,
+            cpf,
+            tipo_funcionario: tipoFuncionario,
+            senha_hash: senha,
+            obra_id: obraId,
+        });
         const userPlain = user.toJSON();
         const response = { user: userPlain, senhaGerada: senha };
         auth_response_1.signUpResponseSchema.parse(response);
@@ -53,11 +59,11 @@ const login = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
-        const isPasswordValid = await bcryptjs_1.default.compare(senha, user.senha);
+        const isPasswordValid = await bcryptjs_1.default.compare(senha, user.senha_hash);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
-        const token = jsonwebtoken_1.default.sign({ id: user.id, cpf: user.cpf, tipoFuncionario: user.tipoFuncionario }, process.env.JWT_SECRET || "default_secret", { expiresIn: "12h" });
+        const token = jsonwebtoken_1.default.sign({ id: user.id, cpf: user.cpf, tipoFuncionario: user.tipo_funcionario }, process.env.JWT_SECRET || "default_secret", { expiresIn: "12h" });
         const response = { token };
         auth_response_1.loginResponseSchema.parse(response);
         return res.status(200).json(response);

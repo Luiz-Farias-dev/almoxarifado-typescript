@@ -44,10 +44,14 @@ const TabelaFinal = dbConfig_1.default.define("tabela_final", {
         type: sequelize_1.default.STRING(255),
         allowNull: true,
     },
+    data_att: {
+        type: sequelize_1.default.STRING,
+        allowNull: false,
+        defaultValue: sequelize_1.default.literal("CURRENT_TIMESTAMP"),
+    },
 }, {
-    timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
+    tableName: "tabela_final",
+    timestamps: false,
 });
 exports.default = TabelaFinal;
 //# sourceMappingURL=tabelaFinal.model.js.map

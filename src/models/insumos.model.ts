@@ -2,7 +2,7 @@ import Sequelize from "sequelize";
 import sequelize from "../config/dbConfig";
 
 const Insumos = sequelize.define(
-  "insumos",
+  "SubInsumo",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -18,23 +18,29 @@ const Insumos = sequelize.define(
       allowNull: false,
     },
     Unid_Cod: {
-      type: Sequelize.CHAR(5),
+      type: Sequelize.CHAR(10),
       allowNull: false,
     },
     SubInsumo_Especificacao: {
-      type: Sequelize.STRING(255),
+      type: Sequelize.CHAR(255),
       allowNull: false,
     },
-    Insumo_ItemObsoleto: {
+    INSUMO_ITEMOBSOLETO: {
       type: Sequelize.CHAR(1),
-      allowNull: false,
-      defaultValue: "N",
+      allowNull: true,
+    },
+    Audit_Insert_Date: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
+    Audit_LastChange: {
+      type: Sequelize.DATE,
+      allowNull: true,
     },
   },
   {
-    timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
+    tableName: "SubInsumo",
+    timestamps: false,
   }
 );
 

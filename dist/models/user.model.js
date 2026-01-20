@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const dbConfig_1 = __importDefault(require("../config/dbConfig"));
-const User = dbConfig_1.default.define("user", {
+const User = dbConfig_1.default.define("informacoes_pessoais", {
     id: {
         type: sequelize_1.default.INTEGER,
         primaryKey: true,
@@ -19,7 +19,7 @@ const User = dbConfig_1.default.define("user", {
         type: sequelize_1.default.STRING,
         allowNull: false,
     },
-    tipoFuncionario: {
+    tipo_funcionario: {
         type: sequelize_1.default.STRING,
         allowNull: false,
     },
@@ -27,7 +27,7 @@ const User = dbConfig_1.default.define("user", {
         type: sequelize_1.default.STRING,
         allowNull: true,
     },
-    senha: {
+    senha_hash: {
         type: sequelize_1.default.STRING,
         allowNull: false,
     },
@@ -36,6 +36,17 @@ const User = dbConfig_1.default.define("user", {
         allowNull: false,
         defaultValue: true,
     },
+    obra_id: {
+        type: sequelize_1.default.INTEGER,
+        allowNull: true,
+        references: {
+            model: "Obras",
+            key: "id",
+        },
+    },
+}, {
+    tableName: "informacoes_pessoais",
+    timestamps: false,
 });
 exports.default = User;
 //# sourceMappingURL=user.model.js.map

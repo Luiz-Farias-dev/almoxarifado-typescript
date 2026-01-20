@@ -8,12 +8,11 @@ export const listaEsperaResponseSchema = z.object({
   SubInsumo_Cod: z.number().int(),
   SubInsumo_Especificacao: z.string(),
   quantidade: z.number().int(),
-  almoxarifeNome: z.string(),
-  centroCusto: z.record(z.string(), z.any()), // JSONB object
+  almoxarife_nome: z.string(),
+  centro_custo: z.record(z.string(), z.any()), // JSONB object
   Unid_Cod: z.string(),
   destino: z.string(),
-  created_at: z.date().or(z.string()).optional(),
-  updated_at: z.date().or(z.string()).optional(),
+  data_att: z.date().or(z.string()).optional(),
 });
 
 export type ListaEsperaResponseDto = z.infer<typeof listaEsperaResponseSchema>;

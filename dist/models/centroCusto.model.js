@@ -5,18 +5,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const dbConfig_1 = __importDefault(require("../config/dbConfig"));
-const CentroCusto = dbConfig_1.default.define("CentroCusto", {
-    id: {
-        type: sequelize_1.default.INTEGER,
-        autoIncrement: true,
+const CentroCusto = dbConfig_1.default.define("Centro_de_Custo", {
+    Centro_Negocio_Cod: {
+        type: sequelize_1.default.CHAR(50),
         primaryKey: true,
+        allowNull: false,
     },
-    nome: {
+    Centro_Nome: {
         type: sequelize_1.default.STRING,
         allowNull: false,
     },
+    work_id: {
+        type: sequelize_1.default.INTEGER,
+        allowNull: false,
+        references: {
+            model: "Obras",
+            key: "id",
+        },
+    },
 }, {
-    tableName: "centro_custo",
+    tableName: "Centro_de_Custo",
     timestamps: false,
 });
 exports.default = CentroCusto;

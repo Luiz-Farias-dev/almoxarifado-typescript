@@ -1,35 +1,35 @@
 import Sequelize from "sequelize";
-
 import sequelize from "../config/dbConfig";
 
 const CentroCusto = sequelize.define(
-  "CentroCusto",
+  "Centro_de_Custo",
   {
     id: {
       type: Sequelize.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
-    nome: {
+    Centro_Negocio_Cod: {
+      type: Sequelize.CHAR(50),
+      primaryKey: true,
+      allowNull: false,
+    },
+    Centro_Nome: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    centroNegocioCod: {
-      type: Sequelize.STRING,
-      allowNull: true,
-      field: "Centro_Negocio_Cod",
-    },
-    obraId: {
+    work_id: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
-        model: "obra",
+        model: "Obras",
         key: "id",
       },
     },
   },
   {
-    tableName: "centro_custo",
+    tableName: "Centro_de_Custo",
     timestamps: false,
   }
 );

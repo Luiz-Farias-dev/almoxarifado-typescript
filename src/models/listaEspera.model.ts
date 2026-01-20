@@ -23,35 +23,39 @@ const ListaEspera = sequelize.define(
       allowNull: false,
     },
     SubInsumo_Especificacao: {
-      type: Sequelize.STRING(255),
+      type: Sequelize.CHAR(255),
       allowNull: false,
     },
     quantidade: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.FLOAT,
       allowNull: false,
       defaultValue: 1,
     },
-    almoxarifeNome: {
+    almoxarife_nome: {
       type: Sequelize.STRING(100),
       allowNull: false,
     },
-    centroCusto: {
+    centro_custo: {
       type: Sequelize.JSONB,
       allowNull: false,
     },
     Unid_Cod: {
-      type: Sequelize.CHAR(5),
+      type: Sequelize.CHAR(10),
       allowNull: false,
     },
     destino: {
       type: Sequelize.STRING(255),
       allowNull: false,
     },
+    data_att: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+    },
   },
   {
-    timestamps: true,
-    createdAt: "created_at",
-    updatedAt: "updated_at",
+    tableName: "lista_espera",
+    timestamps: false,
   }
 );
 

@@ -4,26 +4,32 @@ import sequelize from "../config/dbConfig";
 const UserCentroCusto = sequelize.define(
   "user_centro_custo",
   {
-    userId: {
+    funcionario_id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
-      field: "userId",
+      allowNull: false,
+      references: {
+        model: "informacoes_pessoais",
+        key: "id",
+      },
     },
-    centroCustoId: {
-      type: Sequelize.INTEGER,
+    centro_custo_cod: {
+      type: Sequelize.CHAR(50),
       primaryKey: true,
-      field: "centroCustoId",
+      allowNull: false,
+      references: {
+        model: "Centro_de_Custo",
+        key: "Centro_Negocio_Cod",
+      },
     },
-    obraId: {
+    obra_id: {
       type: Sequelize.INTEGER,
       allowNull: true,
-      field: "obraId",
     },
   },
   {
-    tableName: "user_centro_custo",
+    tableName: "funcionario_centro_custo",
     timestamps: false,
-    // Sequelize will use the field names as specified above
   }
 );
 

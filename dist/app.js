@@ -11,23 +11,25 @@ const user_model_1 = __importDefault(require("./models/user.model"));
 require("./models/listaEspera.model");
 require("./models/insumos.model");
 require("./models/tabelaFinal.model");
+const userCentroCusto_model_1 = __importDefault(require("./models/userCentroCusto.model"));
 const centroCusto_1 = __importDefault(require("./routes/centroCusto"));
 const obra_1 = __importDefault(require("./routes/obra"));
 const insumos_1 = __importDefault(require("./routes/insumos"));
-const UserCentroCusto = dbConfig_1.default.define("user_centro_custo", {}, { tableName: "user_centro_custo", timestamps: false });
-obra_model_1.default.hasMany(user_model_1.default, { foreignKey: "obraId" });
-user_model_1.default.belongsTo(obra_model_1.default, { foreignKey: "obraId" });
-obra_model_1.default.hasMany(centroCusto_model_1.default, { foreignKey: "obraId" });
-centroCusto_model_1.default.belongsTo(obra_model_1.default, { foreignKey: "obraId" });
+const listaEspera_1 = __importDefault(require("./routes/listaEspera"));
+// UserCentroCusto model is now imported from models/userCentroCusto.model.ts
+obra_model_1.default.hasMany(user_model_1.default, { foreignKey: "obra_id" });
+user_model_1.default.belongsTo(obra_model_1.default, { foreignKey: "obra_id" });
+obra_model_1.default.hasMany(centroCusto_model_1.default, { foreignKey: "work_id" });
+centroCusto_model_1.default.belongsTo(obra_model_1.default, { foreignKey: "work_id" });
 user_model_1.default.belongsToMany(centroCusto_model_1.default, {
-    through: UserCentroCusto,
-    foreignKey: "userId",
-    otherKey: "centroCustoId",
+    through: userCentroCusto_model_1.default,
+    foreignKey: "funcionario_id",
+    otherKey: "centro_custo_cod",
 });
 centroCusto_model_1.default.belongsToMany(user_model_1.default, {
-    through: UserCentroCusto,
-    foreignKey: "centroCustoId",
-    otherKey: "userId",
+    through: userCentroCusto_model_1.default,
+    foreignKey: "centro_custo_cod",
+    otherKey: "funcionario_id",
 });
 const app = (0, express_1.default)();
 const port = 8080;
@@ -35,6 +37,7 @@ app.use(express_1.default.json());
 app.use(centroCusto_1.default);
 app.use(obra_1.default);
 app.use(insumos_1.default);
+app.use(listaEspera_1.default);
 const bootstrap = async () => {
     try {
         await dbConfig_1.default.authenticate();

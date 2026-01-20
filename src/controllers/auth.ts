@@ -50,7 +50,13 @@ export const signUp = async (
       // currently do not define association fields. That should be added in the models if persistence of relations is desired.
     }
 
-    const user = await User.create({ nome, cpf, tipoFuncionario, senha });
+    const user = await User.create({
+      nome,
+      cpf,
+      tipo_funcionario: tipoFuncionario,
+      senha_hash: senha,
+      obra_id: obraId,
+    });
     const userPlain = user.toJSON() as any;
 
     const response: SignUpResponseDto = { user: userPlain, senhaGerada: senha };
@@ -75,12 +81,12 @@ export const login = async (
     if (!user) {
       return res.status(401).json({ error: "Credenciais inválidas" });
     }
-    const isPasswordValid = await bcrypt.compare(senha, user.senha);
+    const isPasswordValid = await bcrypt.compare(senha, user.senha_hash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Credenciais inválidas" });
     }
     const token = jwt.sign(
-      { id: user.id, cpf: user.cpf, tipoFuncionario: user.tipoFuncionario },
+      { id: user.id, cpf: user.cpf, tipoFuncionario: user.tipo_funcionario },
       process.env.JWT_SECRET || "default_secret",
       { expiresIn: "12h" },
     );
