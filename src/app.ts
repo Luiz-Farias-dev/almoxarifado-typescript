@@ -15,6 +15,7 @@ import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
 import insumos from "./routes/insumos";
 import listaEsperaRoutes from "./routes/listaEspera";
+import tabelaFinalRoutes from "./routes/tabelaFinal";
 
 // UserCentroCusto model is now imported from models/userCentroCusto.model.ts
 
@@ -45,6 +46,7 @@ app.use(centroCustoRoutes);
 app.use(obrasRoutes);
 app.use(insumos);
 app.use(listaEsperaRoutes);
+app.use(tabelaFinalRoutes);
 
 const bootstrap = async () => {
   try {

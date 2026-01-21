@@ -6,6 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const dbConfig_1 = __importDefault(require("../config/dbConfig"));
 const CentroCusto = dbConfig_1.default.define("Centro_de_Custo", {
+    id: {
+        type: sequelize_1.default.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+    },
     Centro_Negocio_Cod: {
         type: sequelize_1.default.CHAR(50),
         primaryKey: true,
