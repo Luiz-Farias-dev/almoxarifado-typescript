@@ -14,7 +14,7 @@ const CentroCusto = dbConfig_1.default.define("Centro_de_Custo", {
     },
     Centro_Negocio_Cod: {
         type: sequelize_1.default.CHAR(50),
-        primaryKey: true,
+        unique: true,
         allowNull: false,
     },
     Centro_Nome: {

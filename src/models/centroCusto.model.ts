@@ -12,7 +12,7 @@ const CentroCusto = sequelize.define(
     },
     Centro_Negocio_Cod: {
       type: Sequelize.CHAR(50),
-      primaryKey: true,
+      unique: true,
       allowNull: false,
     },
     Centro_Nome: {
@@ -31,7 +31,7 @@ const CentroCusto = sequelize.define(
   {
     tableName: "Centro_de_Custo",
     timestamps: false,
-  }
+  },
 );
 
 export default CentroCusto;

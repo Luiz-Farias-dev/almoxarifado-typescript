@@ -11,6 +11,7 @@ import "./models/insumos.model";
 import "./models/tabelaFinal.model";
 import UserCentroCusto from "./models/userCentroCusto.model";
 
+import authRoutes from "./routes/auth";
 import centroCustoRoutes from "./routes/centroCusto";
 import obrasRoutes from "./routes/obra";
 import insumos from "./routes/insumos";
@@ -42,6 +43,7 @@ const port = 8080;
 
 app.use(express.json());
 
+app.use(authRoutes);
 app.use(centroCustoRoutes);
 app.use(obrasRoutes);
 app.use(insumos);
@@ -51,8 +53,8 @@ app.use(tabelaFinalRoutes);
 const bootstrap = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ force: true });
-    // await sequelize.sync();
+    // await sequelize.sync({ force: true });
+    await sequelize.sync();
 
     app.listen(port, () => {
       console.log(`Servidor está rodando na porta http://localhost:${port}`);

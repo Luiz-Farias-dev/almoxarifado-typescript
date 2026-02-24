@@ -63,7 +63,13 @@ const login = async (req, res, next) => {
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
-        const token = jsonwebtoken_1.default.sign({ id: user.id, cpf: user.cpf, tipoFuncionario: user.tipo_funcionario }, process.env.JWT_SECRET || "default_secret", { expiresIn: "12h" });
+        const token = jsonwebtoken_1.default.sign({
+            id: user.id,
+            cpf: user.cpf,
+            tipoFuncionario: user.tipo_funcionario,
+            nome: user.nome,
+            obra_id: user.obra_id ?? null,
+        }, process.env.JWT_SECRET || "default_secret", { expiresIn: "12h" });
         const response = { token };
         auth_response_1.loginResponseSchema.parse(response);
         return res.status(200).json(response);

@@ -86,7 +86,13 @@ export const login = async (
       return res.status(401).json({ error: "Credenciais inválidas" });
     }
     const token = jwt.sign(
-      { id: user.id, cpf: user.cpf, tipoFuncionario: user.tipo_funcionario },
+      {
+        id: user.id,
+        cpf: user.cpf,
+        tipoFuncionario: user.tipo_funcionario,
+        nome: user.nome,
+        obra_id: user.obra_id ?? null,
+      },
       process.env.JWT_SECRET || "default_secret",
       { expiresIn: "12h" },
     );

@@ -12,10 +12,12 @@ require("./models/listaEspera.model");
 require("./models/insumos.model");
 require("./models/tabelaFinal.model");
 const userCentroCusto_model_1 = __importDefault(require("./models/userCentroCusto.model"));
+const auth_1 = __importDefault(require("./routes/auth"));
 const centroCusto_1 = __importDefault(require("./routes/centroCusto"));
 const obra_1 = __importDefault(require("./routes/obra"));
 const insumos_1 = __importDefault(require("./routes/insumos"));
 const listaEspera_1 = __importDefault(require("./routes/listaEspera"));
+const tabelaFinal_1 = __importDefault(require("./routes/tabelaFinal"));
 // UserCentroCusto model is now imported from models/userCentroCusto.model.ts
 obra_model_1.default.hasMany(user_model_1.default, { foreignKey: "obra_id" });
 user_model_1.default.belongsTo(obra_model_1.default, { foreignKey: "obra_id" });
@@ -34,10 +36,12 @@ centroCusto_model_1.default.belongsToMany(user_model_1.default, {
 const app = (0, express_1.default)();
 const port = 8080;
 app.use(express_1.default.json());
+app.use(auth_1.default);
 app.use(centroCusto_1.default);
 app.use(obra_1.default);
 app.use(insumos_1.default);
 app.use(listaEspera_1.default);
+app.use(tabelaFinal_1.default);
 const bootstrap = async () => {
     try {
         await dbConfig_1.default.authenticate();
