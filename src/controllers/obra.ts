@@ -16,7 +16,7 @@ import {
 export const createObra = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const dto: CreateObraBodyDto = createObraBodySchema.parse(req.body);
   Obra.create(dto)
@@ -32,9 +32,9 @@ export const createObra = (
 export const getAllObras = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
-  Obra.findAll({ attributes: ["id", "nome"], raw: true })
+  Obra.findAll({ attributes: ["id", "name"], raw: true })
     .then((obras) => {
       const dto: getAllObraResponseDto = getAllObraResponseSchema.parse(obras);
       res.status(200).json(dto);
@@ -48,14 +48,14 @@ export const getAllObras = (
 export const getObraById = (
   req: Request<{ obraId: string }>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const obraId = Number(req.params.obraId);
   if (!Number.isInteger(obraId) || obraId <= 0) {
     res.status(400).json({ error: "obraId inválido" });
     return;
   }
-  Obra.findByPk(obraId, { attributes: ["id", "nome"], raw: true })
+  Obra.findByPk(obraId, { attributes: ["id", "name"], raw: true })
     .then((obra) => {
       if (!obra) {
         res.status(404).json({ error: "Obra não encontrada" });
