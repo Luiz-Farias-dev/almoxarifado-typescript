@@ -1,5 +1,6 @@
 import express from "express";
 import Sequelize from "sequelize";
+import cors from "cors";
 
 import sequelize from "./config/dbConfig";
 
@@ -40,6 +41,13 @@ CentroCusto.belongsToMany(User, {
 
 const app = express();
 const port = 8080;
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 

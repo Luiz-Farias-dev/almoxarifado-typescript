@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const dbConfig_1 = __importDefault(require("./config/dbConfig"));
 const centroCusto_model_1 = __importDefault(require("./models/centroCusto.model"));
 const obra_model_1 = __importDefault(require("./models/obra.model"));
@@ -35,6 +36,10 @@ centroCusto_model_1.default.belongsToMany(user_model_1.default, {
 });
 const app = (0, express_1.default)();
 const port = 8080;
+app.use((0, cors_1.default)({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 app.use(express_1.default.json());
 app.use(auth_1.default);
 app.use(centroCusto_1.default);
@@ -45,8 +50,8 @@ app.use(tabelaFinal_1.default);
 const bootstrap = async () => {
     try {
         await dbConfig_1.default.authenticate();
-        await dbConfig_1.default.sync({ force: true });
-        // await sequelize.sync();
+        // await sequelize.sync({ force: true });
+        await dbConfig_1.default.sync();
         app.listen(port, () => {
             console.log(`Servidor está rodando na porta http://localhost:${port}`);
             console.log("Servidor está pronto para receber requisições!");

@@ -20,7 +20,7 @@ const createObra = (req, res, next) => {
 };
 exports.createObra = createObra;
 const getAllObras = (req, res, next) => {
-    obra_model_1.default.findAll({ attributes: ["id", "nome"], raw: true })
+    obra_model_1.default.findAll({ attributes: ["id", "name"], raw: true })
         .then((obras) => {
         const dto = obra_response_1.getAllObraResponseSchema.parse(obras);
         res.status(200).json(dto);
@@ -37,7 +37,7 @@ const getObraById = (req, res, next) => {
         res.status(400).json({ error: "obraId inválido" });
         return;
     }
-    obra_model_1.default.findByPk(obraId, { attributes: ["id", "nome"], raw: true })
+    obra_model_1.default.findByPk(obraId, { attributes: ["id", "name"], raw: true })
         .then((obra) => {
         if (!obra) {
             res.status(404).json({ error: "Obra não encontrada" });
