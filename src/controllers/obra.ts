@@ -18,15 +18,27 @@ export const createObra = (
   res: Response,
   next: NextFunction,
 ): void => {
-  const dto: CreateObraBodyDto = createObraBodySchema.parse(req.body);
-  Obra.create(dto)
-    .then((obra) => {
-      res.status(201).json(obra);
-    })
-    .catch((err) => {
-      console.error("Erro ao criar obra:", err);
-      res.status(500).json({ error: "Erro ao criar obra" });
-    });
+  try {
+    const dto: CreateObraBodyDto = createObraBodySchema.parse(req.body);
+
+    Obra.create(dto)
+      .then((obra) => {
+        res.status(201).json(obra);
+      })
+      .catch((err) => {
+        console.error("Erro ao criar obra:", err);
+
+        if (err.name === "SequelizeValidationError") {
+          res.status(400).json({ error: "Dados inválidos para criação de obra" });
+          return;
+        }
+
+        res.status(500).json({ error: "Erro ao criar obra" });
+      });
+  } catch (err: any) {
+    console.error("Erro de validação ao criar obra:", err);
+    res.status(400).json({ error: "Dados inválidos para criação de obra" });
+  }
 };
 
 export const getAllObras = (

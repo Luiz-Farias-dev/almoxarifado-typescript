@@ -13,7 +13,7 @@ const Obra = dbConfig_1.default.define("Obras", {
     },
     initials: {
         type: sequelize_1.default.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     name: {
         type: sequelize_1.default.STRING,

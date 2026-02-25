@@ -8,15 +8,25 @@ const obra_model_1 = __importDefault(require("./../models/obra.model"));
 const obra_schema_1 = require("../schemas/obra/obra.schema");
 const obra_response_1 = require("../schemas/obra/obra.response");
 const createObra = (req, res, next) => {
-    const dto = obra_schema_1.createObraBodySchema.parse(req.body);
-    obra_model_1.default.create(dto)
-        .then((obra) => {
-        res.status(201).json(obra);
-    })
-        .catch((err) => {
-        console.error("Erro ao criar obra:", err);
-        res.status(500).json({ error: "Erro ao criar obra" });
-    });
+    try {
+        const dto = obra_schema_1.createObraBodySchema.parse(req.body);
+        obra_model_1.default.create(dto)
+            .then((obra) => {
+            res.status(201).json(obra);
+        })
+            .catch((err) => {
+            console.error("Erro ao criar obra:", err);
+            if (err.name === "SequelizeValidationError") {
+                res.status(400).json({ error: "Dados inválidos para criação de obra" });
+                return;
+            }
+            res.status(500).json({ error: "Erro ao criar obra" });
+        });
+    }
+    catch (err) {
+        console.error("Erro de validação ao criar obra:", err);
+        res.status(400).json({ error: "Dados inválidos para criação de obra" });
+    }
 };
 exports.createObra = createObra;
 const getAllObras = (req, res, next) => {

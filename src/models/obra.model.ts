@@ -11,7 +11,7 @@ const Obra = sequelize.define(
     },
     initials: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     name: {
       type: Sequelize.STRING,
