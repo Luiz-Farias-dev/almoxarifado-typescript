@@ -6,11 +6,11 @@ const zod_1 = require("zod");
 // Schema base para criação de produto
 exports.produtoBaseSchema = zod_1.z.object({
     Insumo_Cod: zod_1.z
-        .int()
+        .string()
         .min(1, "O código do insumo é obrigatório")
         .max(50, "O código do insumo deve ter no máximo 50 caracteres"),
     SubInsumo_Cod: zod_1.z
-        .int()
+        .string()
         .max(50, "O código do sub-insumo deve ter no máximo 50 caracteres")
         .nullable()
         .optional(),

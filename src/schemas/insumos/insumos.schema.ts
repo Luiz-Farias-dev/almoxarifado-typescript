@@ -4,12 +4,12 @@ import { z } from "zod";
 // Schema base para criação de produto
 export const produtoBaseSchema = z.object({
   Insumo_Cod: z
-    .int()
+    .string()
     .min(1, "O código do insumo é obrigatório")
     .max(50, "O código do insumo deve ter no máximo 50 caracteres"),
 
   SubInsumo_Cod: z
-    .int()
+    .string()
     .max(50, "O código do sub-insumo deve ter no máximo 50 caracteres")
     .nullable()
     .optional(),
