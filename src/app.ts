@@ -61,8 +61,6 @@ app.use(tabelaFinalRoutes);
 const bootstrap = async () => {
   try {
     await sequelize.authenticate();
-    // await sequelize.sync({ force: true });
-    await sequelize.sync();
 
     app.listen(port, () => {
       console.log(`Servidor está rodando na porta http://localhost:${port}`);
