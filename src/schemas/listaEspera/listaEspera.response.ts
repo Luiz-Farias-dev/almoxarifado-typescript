@@ -12,7 +12,7 @@ export const listaEsperaResponseSchema = z.object({
   centro_custo: z.record(z.string(), z.any()), // JSONB object
   Unid_Cod: z.string(),
   destino: z.string(),
-  data_att: z.date().or(z.string()).optional(),
+  data_att: z.date().or(z.string()).nullable().optional(),
 });
 
 export type ListaEsperaResponseDto = z.infer<typeof listaEsperaResponseSchema>;

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, raw } from "express";
+import { Request, Response, NextFunction } from "express";
 import * as XLSX from "xlsx";
 import { parse as csvParse } from "csv-parse/sync";
 import iconv from "iconv-lite";
@@ -14,10 +14,6 @@ import {
 } from "../utils/insumosHelpers";
 import { produtoBaseSchema } from "../schemas/insumos/insumos.schema";
 import {
-  produtoResponseSchema,
-  ProdutoResponseDto,
-  getAllProdutosResponseSchema,
-  GetAllProdutosResponseDto,
   uploadResumoResponseSchema,
   UploadResumoResponseDto,
 } from "../schemas/insumos/insumos.response";
@@ -333,10 +329,7 @@ export const createInsumo = async (
   try {
     const dto = produtoBaseSchema.parse(req.body);
     const novoInsumo = await Insumos.create(dto);
-    const responseDto: ProdutoResponseDto = produtoResponseSchema.parse(
-      novoInsumo.toJSON()
-    );
-    res.status(201).json(responseDto);
+    res.status(201).json(novoInsumo.toJSON());
   } catch (error) {
     console.error("Erro ao criar novo insumo:", error);
     res.status(500).json({ error: "Ocorreu um erro ao criar o insumo." });
@@ -350,11 +343,7 @@ export const getAllInsumos = async (
 ) => {
   try {
     const insumos = await Insumos.findAll();
-    const responseDto: GetAllProdutosResponseDto =
-      getAllProdutosResponseSchema.parse(
-        insumos.map((insumo) => insumo.toJSON())
-      );
-    res.status(200).json(responseDto);
+    res.status(200).json(insumos.map((insumo) => insumo.toJSON()));
   } catch (error) {
     console.error("Erro ao buscar todos os insumos:", error);
     res.status(500).json({ error: "Ocorreu um erro ao buscar os insumos." });

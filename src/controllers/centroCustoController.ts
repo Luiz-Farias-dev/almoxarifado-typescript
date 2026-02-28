@@ -57,6 +57,7 @@ export const deleteCentroCusto = (
   const centroId = Number(req.params.centroId);
   if (!Number.isInteger(centroId) || centroId <= 0) {
     res.status(400).json({ error: "centroId inválido" });
+    return;
   }
 
   CentroCusto.destroy({ where: { id: centroId } })

@@ -40,12 +40,12 @@ export const getCurrentUser = async (
 
     next();
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({ error: "Token inválido" });
-      return;
-    }
     if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({ error: "Token expirado" });
+      return;
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ error: "Token inválido" });
       return;
     }
     console.error("Erro na autenticação:", error);

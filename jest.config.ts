@@ -7,6 +7,9 @@ const config: Config = {
   testMatch: ["**/__tests__/**/*.test.ts"],
   moduleFileExtensions: ["ts", "js", "json"],
   clearMocks: true,
+  transform: {
+    "^.+\\.ts$": ["ts-jest", { isolatedModules: true }],
+  },
 };
 
 export default config;
