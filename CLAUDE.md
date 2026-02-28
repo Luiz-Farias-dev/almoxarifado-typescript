@@ -69,11 +69,15 @@ src/
 - Default password for new users: `"Padrao#2025"`
 - Env var: `JWT_SECRET` (falls back to `"default_secret"`)
 
-### Known Issues (Backend Tests)
+### Testing Notes (Backend)
 
-- `@types/jest` must be installed and `"jest"` added to tsconfig types
-- Duplicate config: both `jest.config.js` and `jest.config.ts` exist — keep only `.ts`
-- ts-jest warns about `isolatedModules` with nodenext module
+- Test config: `jest.config.ts` only (`.js` version was removed)
+- `ts-jest` must be installed (`npm i -D ts-jest`) — it is not bundled with Jest
+- `tsconfig.json` `types` array must include `"jest"` alongside `"node"`
+- `jest.config.ts` sets `isolatedModules: true` in the ts-jest transform to suppress the nodenext warning
+- `TokenExpiredError` is a subclass of `JsonWebTokenError` — always check the subclass first in catch blocks
+- Zod `.optional()` does NOT allow `null`; use `.nullable().optional()` for nullable DB fields
+- Do not run Zod response schema parsing on controller output — use it only for input validation
 
 ## Frontend (Almoxarifado-Frontend)
 
